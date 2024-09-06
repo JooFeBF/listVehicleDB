@@ -60,8 +60,24 @@ void addVehicle (Vehicle **tail, string brand, string model, char type, float pr
     *tail = newVehicle;
   } else {
     Vehicle *temp = *tail;
-    *tail = newVehicle;
-    newVehicle->next = temp;
+    Vehicle *prev = NULL;
+
+    while (temp != NULL) {
+      if (strcmp(temp->plate.c_str(), plate.c_str()) > 0) {
+        break;
+      }
+
+      prev = temp;
+      temp = temp->next;
+    }
+
+    if (prev == NULL) {
+      newVehicle->next = temp;
+      *tail = newVehicle;
+    } else {
+      prev->next = newVehicle;
+      newVehicle->next = temp;
+    }
   }
 }
 
