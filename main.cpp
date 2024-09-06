@@ -271,6 +271,63 @@ void moveDeactivatedVehicles (Vehicle **tailA, Vehicle **tailB) {
   }
 }
 
+void swapVehiclesByIndex (Vehicle **tail, int indexA, int indexB) {
+  Vehicle *temp = *tail;
+  Vehicle *prevA = NULL;
+  Vehicle *prevB = NULL;
+
+  for (int i = 0; i < indexA; i++) {
+    prevA = temp;
+    temp = temp->next;
+  }
+
+  Vehicle *vehicleA = temp;
+
+  temp = *tail;
+  for (int i = 0; i < indexB; i++) {
+    prevB = temp;
+    temp = temp->next;
+  }
+
+  Vehicle *vehicleB = temp;
+
+  if (prevA == NULL) {
+    *tail = vehicleB;
+  } else {
+    prevA->next = vehicleB;
+  }
+
+  if (prevB == NULL) {
+    *tail = vehicleA;
+  } else {
+    prevB->next = vehicleA;
+  }
+
+  Vehicle *tempA = vehicleA->next;
+  vehicleA->next = vehicleB->next;
+  vehicleB->next = tempA;
+}
+
+int countVehicles (Vehicle *tail) {
+  Vehicle *temp = tail;
+
+  int count = 0;
+  while (temp != NULL) {
+    count++;
+    temp = temp->next;
+  }
+
+  return count;
+}
+
+void invertVehicles (Vehicle **tail) {
+  int count = countVehicles(*tail);
+
+  for (int i = 0; i < count / 2; i++) {
+    swapVehiclesByIndex(tail, i, count - i - 1);
+  }
+}
+
 
 
 
@@ -292,7 +349,8 @@ int main () {
     cout << "8. Delete vehicle" << endl;
     cout << "9. Move deactivated vehicles" << endl;
     cout << "10. Show vehicles" << endl;
-    cout << "11. Exit" << endl;
+    cout << "11. Invert vehicles" << endl;
+    cout << "12. Exit" << endl;
     cout << "Option: ";
     cin >> option;
 
@@ -431,6 +489,11 @@ int main () {
         break;
       }
       case 11: {
+        invertVehicles(&tailA);
+        break;
+      }
+      case 12: {
+        cout << "Exiting..." << endl;
         break;
       }
       default: {
@@ -438,7 +501,7 @@ int main () {
         break;
       }
   }
-  } while (option != 11);
+  } while (option != 12);
 
   return 0;
 }
