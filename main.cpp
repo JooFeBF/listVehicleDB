@@ -18,14 +18,19 @@ Se requiere construir un programa en C o C++ para gestionar la información rela
 Elabore la versión con listas simples, es decir, en está versión cada vehículo es un nodo de una lista simple, observe que la versión con listas simples incluye nuevas funcionalidades (en el menú anterior las puede identificar -opciones 2, 6, 76-).
 
 Al momento de registrar un vehículo en el sistema (opción 1) es opcional adicionarle de una vez características o, no hacerlo y agregarlas o agregar más luego por la opción 2. Es decir, en la opción 1 se puede preguntar si se desea agregar características.
+
+El tipo puede ser P (propio) o C (consignado).
 */
 
 struct Vehicle {
   string brand;
   string model;
-  string type;
+  char type;
   float price;
   string active;
+  string color;
+  string plate;
+  string year;
   string *features;
   Vehicle *next;
 };
@@ -36,8 +41,10 @@ struct Feature {
 };
 
 
-
 int main () {
-  cout << "Hello, World!" << endl;
+  Vehicle *head = NULL;
+  Vehicle *tail = NULL;
+
+
   return 0;
 }
