@@ -1,12 +1,12 @@
 #include <cstring>
 #include <iostream>
+#include <conio.h>
 
 using namespace std;
 
-/**
-Para el problema de la consignataria de vehículos...
-
-Se requiere construir un programa en C o C++ para gestionar la información relacionada con los vehículos que administra y comercializa una empresa consignataria de vehículos (compra-venta de vehículos). El objetivo es disponer de un sistema que permita:
+/*
+ Construya una nueva versión de su programa con listas simples que gestiona la información de vehículos del concesionario (versión antes de la evaluación) de forma que ahora funcione con una lista circular simple. En tal sentido, analice y actualice las funciones que lo componen.
+//MENU DE OPCIONES DEL PROGRAMA
 1. registrar vehículos que ingresan al negocio.
 2. Agregar características a la hoja de vida de un vehículo (la hoja de vida es una lista simple de datos adicionales de cada vehículo).
 3. consultar las existencias de vehículos activos por marca-modelo, y, por rango de precio, y, por tipo.
@@ -15,14 +15,14 @@ Se requiere construir un programa en C o C++ para gestionar la información rela
 6. Mover vehículos borrados a una nueva lista (desaparecen de la lista original, además desaparece su hoja de vida).
 7. Consultar lista total de vehículos (El usuario escoge la lista a consultar: A-ctivos B-orrados)
 8. salir
+//
 
-Elabore la versión con listas simples, es decir, en está versión cada vehículo es un nodo de una lista simple, observe que la versión con listas simples incluye nuevas funcionalidades (en el menú anterior las puede identificar -opciones 2, 6, 76-).
-
-Al momento de registrar un vehículo en el sistema (opción 1) es opcional adicionarle de una vez características o, no hacerlo y agregarlas o agregar más luego por la opción 2. Es decir, en la opción 1 se puede preguntar si se desea agregar características.
-
-El tipo puede ser P (propio) o C (consignado).
-Activo puede ser A (activo) o B (borrado).
+Modifique además la opción 7 para lograr que la consulta de vehículos funcione con teclas, es decir, al seleccionar la opción 7 se muestra el primer vehículo de la lista, para ver el siguiente debemos oprimir Flecha Abajo, solo se verá un vehículo a la vez, más precisamente, el siguiente de la lista. En el momento en que se desee volver al menú se imprimirá ESC. Recuerde que en la opción 7 el usuario podrá indicar cuál de las dos listas desea consultar.
 */
+
+#define ESC 27
+#define ENTER 13
+#define UP 72
 
 
 struct Feature {
@@ -43,7 +43,7 @@ struct Vehicle {
   Vehicle *next;
 };
 
-void addVehicle (Vehicle **tail, string brand, string model, char type, float price, char active, string color, string plate, string year) {
+void addVehicle (Vehicle **tail, Vehicle **head, string brand, string model, char type, float price, char active, string color, string plate, string year) {
   Vehicle *newVehicle = new Vehicle;
   newVehicle->brand = brand;
   newVehicle->model = model;
@@ -58,10 +58,13 @@ void addVehicle (Vehicle **tail, string brand, string model, char type, float pr
 
   if (*tail == NULL) {
     *tail = newVehicle;
+    *head = newVehicle;
+    newVehicle->next = newVehicle;
   } else {
     Vehicle *temp = *tail;
     *tail = newVehicle;
-    newVehicle->next = temp;
+    temp->next = newVehicle;
+    newVehicle->next = *head;
   }
 }
 
@@ -82,38 +85,35 @@ void addFeature (Vehicle *vehicle, string name) {
 void showVehicles (Vehicle *tail) {
   Vehicle *temp = tail;
 
-  int count = 0;
-  while (temp != NULL) {
-    cout << "Vehicle " << count << endl;
-    cout << "Brand: " << temp->brand << endl;
-    cout << "Model: " << temp->model << endl;
-    cout << "Type: " << temp->type << endl;
-    cout << "Price: " << temp->price << endl;
-    cout << "Active: " << temp->active << endl;
-    cout << "Color: " << temp->color << endl;
-    cout << "Plate: " << temp->plate << endl;
-    cout << "Year: " << temp->year << endl;
+  int key = 0;
+  key = getch();
+  while (key != ESC && key != ENTER) {
+      cout << "Brand: " << temp->brand << endl;
+      cout << "Model: " << temp->model << endl;
+      cout << "Type: " << temp->type << endl;
+      cout << "Price: " << temp->price << endl;
+      cout << "Active: " << temp->active << endl;
+      cout << "Color: " << temp->color << endl;
+      cout << "Plate: " << temp->plate << endl;
+      cout << "Year: " << temp->year << endl;
 
-    Feature *tempFeature = temp->features;
-    if (tempFeature == NULL) {
-      cout << "No features" << endl;
-    } else {
-      cout << "Features:" << endl;
+      Feature *tempFeature = temp->features;
       while (tempFeature != NULL) {
-        cout << "- " << tempFeature->name << endl;
+        cout << "Feature: " << tempFeature->name << endl;
         tempFeature = tempFeature->next;
       }
-    }
 
-    temp = temp->next;
-    count++;
+      key = getch();
+      if (key == UP) {
+        temp = temp->next;
+      }
   }
 }
 
 void showVehiclesByBrand (Vehicle *tail, string brand) {
   Vehicle *temp = tail;
 
-  while (temp != NULL) {
+  while (temp != NULL && temp->next != tail) {
     if (strcspn(temp->brand.c_str(), brand.c_str()) == 0) {
       cout << "Brand: " << temp->brand << endl;
       cout << "Model: " << temp->model << endl;
@@ -138,7 +138,7 @@ void showVehiclesByBrand (Vehicle *tail, string brand) {
 void showVehiclesByModel (Vehicle *tail, string model) {
   Vehicle *temp = tail;
 
-  while (temp != NULL) {
+  while (temp != NULL && temp->next != tail) {
     if (strcspn(temp->model.c_str(), model.c_str()) == 0) {
       cout << "Brand: " << temp->brand << endl;
       cout << "Model: " << temp->model << endl;
@@ -163,7 +163,7 @@ void showVehiclesByModel (Vehicle *tail, string model) {
 void showVehiclesByPriceRange (Vehicle *tail, float minPrice, float maxPrice) {
   Vehicle *temp = tail;
 
-  while (temp != NULL) {
+  while (temp != NULL && temp->next != tail) {
     if (temp->price >= minPrice && temp->price <= maxPrice) {
       cout << "Brand: " << temp->brand << endl;
       cout << "Model: " << temp->model << endl;
@@ -188,7 +188,7 @@ void showVehiclesByPriceRange (Vehicle *tail, float minPrice, float maxPrice) {
 void showVehiclesByType (Vehicle *tail, char type) {
   Vehicle *temp = tail;
 
-  while (temp != NULL) {
+  while (temp != NULL && temp->next != tail) {
     if (temp->type == type) {
       cout << "Brand: " << temp->brand << endl;
       cout << "Model: " << temp->model << endl;
@@ -213,7 +213,7 @@ void showVehiclesByType (Vehicle *tail, char type) {
 void updateVehicle (Vehicle *tail, string plate, float price, char type) {
   Vehicle *temp = tail;
 
-  while (temp != NULL) {
+  while (temp != NULL && temp->next != tail) {
     if (strcspn(temp->plate.c_str(), plate.c_str()) == 0) {
       temp->price = price;
       temp->type = type;
@@ -226,7 +226,7 @@ void updateVehicle (Vehicle *tail, string plate, float price, char type) {
 void deleteVehicle (Vehicle *tail, string plate) {
   Vehicle *temp = tail;
 
-  while (temp != NULL) {
+  while (temp != NULL && temp->next != tail) {
     if (temp -> plate == plate) {
       temp->active = 'B';
       return;
@@ -235,39 +235,37 @@ void deleteVehicle (Vehicle *tail, string plate) {
   }
 }
 
-void moveDeactivatedVehicles (Vehicle **tailA, Vehicle **tailB) {
+
+void moveDeactivatedVehicles (Vehicle **tailA, Vehicle **tailB, Vehicle **headA, Vehicle **headB) {
   Vehicle *temp = *tailA;
   Vehicle *prev = NULL;
+  Vehicle *next = (*tailA)->next;
 
-  while (temp != NULL) {
+  while (temp != NULL && temp->next != *tailA) {
     if (temp->active == 'B') {
       if (prev == NULL) {
-        *tailA = temp->next;
+        *tailA = next;
+        (*headA)->next = next;
       } else {
-        prev->next = temp->next;
+        prev->next = next;
       }
 
       if (*tailB == NULL) {
         *tailB = temp;
+        *headB = temp;
+        temp->next = temp;
       } else {
         Vehicle *tempB = *tailB;
         *tailB = temp;
-        temp->next = tempB;
+        tempB->next = temp;
+        temp->next = *headB;
       }
-
-      Feature *tempFeature = temp->features;
-      temp->features = NULL;
-      while (tempFeature != NULL) {
-        Feature *tempFeatureNext = tempFeature->next;
-        delete tempFeature;
-        tempFeature = tempFeatureNext;
-      }
-
-      temp = temp->next;
     } else {
       prev = temp;
-      temp = temp->next;
     }
+
+    temp = next;
+    next = next->next;
   }
 }
 
@@ -276,8 +274,9 @@ void moveDeactivatedVehicles (Vehicle **tailA, Vehicle **tailB) {
 
 int main () {
   Vehicle *tailA = NULL;
-
   Vehicle *tailB = NULL;
+  Vehicle *headA = NULL;
+  Vehicle *headB = NULL;
 
   int option;
 
@@ -324,7 +323,7 @@ int main () {
         cout << "Year: ";
         cin >> year;
 
-        addVehicle(&tailA, brand, model, type, price, active, color, plate, year);
+        addVehicle(&tailA, &headA, brand, model, type, price, active, color, plate, year);
         break;
       }
       case 2: {
@@ -411,7 +410,7 @@ int main () {
         break;
       }
       case 9: {
-        moveDeactivatedVehicles(&tailA, &tailB);
+        moveDeactivatedVehicles(&tailA, &tailB, &headA, &headB);
         break;
       }
       case 10: {
