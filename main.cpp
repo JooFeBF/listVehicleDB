@@ -78,8 +78,8 @@ void addFeature (Vehicle *vehicle, string name) {
     vehicle->features = newFeature;
     vehicle->features->next = newFeature;
   } else {
-    Feature *temp = vehicle->features;
     Feature *temp2 = vehicle->features;
+    Feature *temp = vehicle->features;
     vehicle->features = newFeature;
     newFeature->next = temp;
     while (temp2->next != NULL && temp2->next != temp) {
@@ -379,9 +379,10 @@ int main () {
 
         Vehicle *temp = tailA;
 
-        while (temp != NULL) {
+        while (temp != NULL && temp->next != tailA) {
           if (strcspn(temp->plate.c_str(), plate.c_str()) == 0) {
             addFeature(temp, name);
+            break;
           }
 
           temp = temp->next;
