@@ -23,6 +23,7 @@ Modifique además la opción 7 para lograr que la consulta de vehículos funcion
 #define ESC 27
 #define ENTER 13
 #define UP 72
+#define RIGHT 77
 
 
 struct Feature {
@@ -75,10 +76,16 @@ void addFeature (Vehicle *vehicle, string name) {
 
   if (vehicle->features == NULL) {
     vehicle->features = newFeature;
+    vehicle->features->next = newFeature;
   } else {
-    Feature *tempFeature = vehicle->features;
+    Feature *temp = vehicle->features;
+    Feature *temp2 = vehicle->features;
     vehicle->features = newFeature;
-    newFeature->next = tempFeature;
+    newFeature->next = temp;
+    while (temp2->next != NULL && temp2->next != temp) {
+      temp2 = temp2->next;
+    }
+    temp2->next = newFeature;
   }
 }
 
@@ -98,9 +105,12 @@ void showVehicles (Vehicle *tail) {
       cout << "Year: " << temp->year << endl;
 
       Feature *tempFeature = temp->features;
-      while (tempFeature != NULL) {
+      while (tempFeature != NULL && key != ESC && key != ENTER) {
         cout << "Feature: " << tempFeature->name << endl;
-        tempFeature = tempFeature->next;
+        if (key == RIGHT) {
+          tempFeature = tempFeature->next;
+        }
+        key = getch();
       }
 
       key = getch();
@@ -113,7 +123,9 @@ void showVehicles (Vehicle *tail) {
 void showVehiclesByBrand (Vehicle *tail, string brand) {
   Vehicle *temp = tail;
 
-  while (temp != NULL && temp->next != tail) {
+  int key = 0;
+  key = getch();
+  while (key != ESC && key != ENTER) {
     if (strcspn(temp->brand.c_str(), brand.c_str()) == 0) {
       cout << "Brand: " << temp->brand << endl;
       cout << "Model: " << temp->model << endl;
@@ -125,20 +137,28 @@ void showVehiclesByBrand (Vehicle *tail, string brand) {
       cout << "Year: " << temp->year << endl;
 
       Feature *tempFeature = temp->features;
-      while (tempFeature != NULL) {
+      while (tempFeature != NULL && key != ESC && key != ENTER) {
         cout << "Feature: " << tempFeature->name << endl;
-        tempFeature = tempFeature->next;
+        if (key == RIGHT) {
+          tempFeature = tempFeature->next;
+        }
+        key = getch();
       }
     }
 
-    temp = temp->next;
+    key = getch();
+    if (key == UP) {
+      temp = temp->next;
+    }
   }
 }
 
 void showVehiclesByModel (Vehicle *tail, string model) {
   Vehicle *temp = tail;
 
-  while (temp != NULL && temp->next != tail) {
+  int key = 0;
+  key = getch();
+  while (key != ESC && key != ENTER) {
     if (strcspn(temp->model.c_str(), model.c_str()) == 0) {
       cout << "Brand: " << temp->brand << endl;
       cout << "Model: " << temp->model << endl;
@@ -150,20 +170,28 @@ void showVehiclesByModel (Vehicle *tail, string model) {
       cout << "Year: " << temp->year << endl;
 
       Feature *tempFeature = temp->features;
-      while (tempFeature != NULL) {
+      while (tempFeature != NULL && key != ESC && key != ENTER) {
         cout << "Feature: " << tempFeature->name << endl;
-        tempFeature = tempFeature->next;
+        if (key == RIGHT) {
+          tempFeature = tempFeature->next;
+        }
+        key = getch();
       }
     }
 
-    temp = temp->next;
+    key = getch();
+    if (key == UP) {
+      temp = temp->next;
+    }
   }
 }
 
 void showVehiclesByPriceRange (Vehicle *tail, float minPrice, float maxPrice) {
   Vehicle *temp = tail;
 
-  while (temp != NULL && temp->next != tail) {
+  int key = 0;
+  key = getch();
+  while (key != ESC && key != ENTER) {
     if (temp->price >= minPrice && temp->price <= maxPrice) {
       cout << "Brand: " << temp->brand << endl;
       cout << "Model: " << temp->model << endl;
@@ -175,20 +203,28 @@ void showVehiclesByPriceRange (Vehicle *tail, float minPrice, float maxPrice) {
       cout << "Year: " << temp->year << endl;
 
       Feature *tempFeature = temp->features;
-      while (tempFeature != NULL) {
+      while (tempFeature != NULL && key != ESC && key != ENTER) {
         cout << "Feature: " << tempFeature->name << endl;
-        tempFeature = tempFeature->next;
+        if (key == RIGHT) {
+          tempFeature = tempFeature->next;
+        }
+        key = getch();
       }
     }
 
-    temp = temp->next;
+    key = getch();
+    if (key == UP) {
+      temp = temp->next;
+    }
   }
 }
 
 void showVehiclesByType (Vehicle *tail, char type) {
   Vehicle *temp = tail;
 
-  while (temp != NULL && temp->next != tail) {
+  int key = 0;
+  key = getch();
+  while (key != ESC && key != ENTER) {
     if (temp->type == type) {
       cout << "Brand: " << temp->brand << endl;
       cout << "Model: " << temp->model << endl;
@@ -200,13 +236,19 @@ void showVehiclesByType (Vehicle *tail, char type) {
       cout << "Year: " << temp->year << endl;
 
       Feature *tempFeature = temp->features;
-      while (tempFeature != NULL) {
+      while (tempFeature != NULL && key != ESC && key != ENTER) {
         cout << "Feature: " << tempFeature->name << endl;
-        tempFeature = tempFeature->next;
+        if (key == RIGHT) {
+          tempFeature = tempFeature->next;
+        }
+        key = getch();
       }
     }
 
-    temp = temp->next;
+    key = getch();
+    if (key == UP) {
+      temp = temp->next;
+    }
   }
 }
 
